@@ -1,0 +1,33 @@
+name: Download Dailymotion Video
+
+on:
+  workflow_dispatch:
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          pip install yt-dlp
+
+      - name: Download video
+        run: |
+          yt-dlp "https://www.dailymotion.com/video/xa6zb0y" \
+          --format "best" \
+          --output "video.%(ext)s" \
+          --merge-output-format mp4 \
+          --retries 10 \
+          --fragment-retries 10
+
+      - name: Show files
+        run: ls -lh
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: video
+          path: video.mp4
